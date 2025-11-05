@@ -1,5 +1,9 @@
 package com.cbmedia.rollforending.models
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+
 interface Game {
     val diceXName: String
         get() = "X"
@@ -7,6 +11,9 @@ interface Game {
         get() = "Y"
     val diceZName: String
         get() = "Z"
+
+    val backgroundColor: Color?
+        get() = null
 
     val title: String
     val categoryAName: String

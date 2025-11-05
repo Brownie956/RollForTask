@@ -1,5 +1,6 @@
 package com.cbmedia.rollforending.games
 
+import androidx.compose.ui.graphics.Color
 import com.cbmedia.rollforending.models.Game
 import com.cbmedia.rollforending.models.Task
 
@@ -8,6 +9,8 @@ object LoLGame: Game {
     override val categoryAName: String = "Money"
     override val categoryBName: String = "CS score"
     override val categoryCName: String = "Win condition"
+
+    override val backgroundColor: Color? = Color(0xFFC476FC)
 
     override fun determineCategoryATask(x: Int, y: Int): Task {
         return Task("Save ${x + y} gold above current gold level", 5, categoryAName)

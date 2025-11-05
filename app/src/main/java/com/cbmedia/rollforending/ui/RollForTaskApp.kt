@@ -81,7 +81,7 @@ fun RollForTaskApp(
 
     Surface(
         modifier = modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = selectedGame.backgroundColor ?: MaterialTheme.colorScheme.background
     ) {
         Column(
             modifier = Modifier
@@ -127,7 +127,7 @@ fun RollForTaskApp(
                     color = DividerDefaults.color
                 )
                 Text(it.category, fontSize = 18.sp)
-                Text(it.name, fontSize = 20.sp)
+                Text(it.name, fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 Text("Points earned: ${it.points}", fontSize = 18.sp)
             }
 

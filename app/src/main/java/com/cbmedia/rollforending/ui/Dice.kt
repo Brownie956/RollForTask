@@ -47,7 +47,7 @@ fun DieDisplay(
     val backgroundColor = when (diceRoll.diceStatus) {
         DiceStatus.SINGLE -> MaterialTheme.colorScheme.surface
         DiceStatus.DOUBLE -> Color(0xFFFCE576)
-        DiceStatus.TRIPLE -> Color(0xFFFF5D75)
+        DiceStatus.TRIPLE -> Color(0xFFFF0012)
     }
     Column(horizontalAlignment = Alignment.Companion.CenterHorizontally) {
         Text(diceRoll.name, fontSize = 18.sp, fontWeight = FontWeight.Companion.Medium)
