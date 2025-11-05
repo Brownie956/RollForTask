@@ -89,6 +89,7 @@ class RollForTaskViewModel: ViewModel() {
             z.value = DiceRoll(name = "Z", rollValue = rollZ, isTriple = true)
             score.intValue -= 5
         } else if (rollX == rollY || rollX == rollZ || rollY == rollZ) {
+            // Must be double
             when (rollX) {
                 rollY -> {
                     x.value = DiceRoll(name = "X", rollValue = rollX, isDouble = true)
@@ -107,6 +108,7 @@ class RollForTaskViewModel: ViewModel() {
                 }
             }
         } else {
+            // Neither triple or double
             x.value = DiceRoll(name = "X", rollValue = rollX)
             y.value = DiceRoll(name = "Y", rollValue = rollY)
             z.value = DiceRoll(name = "Z", rollValue = rollZ)
