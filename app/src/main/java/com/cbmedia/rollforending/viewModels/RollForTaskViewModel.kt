@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.cbmedia.rollforending.games.FitnessGame
+import com.cbmedia.rollforending.models.DiceRoll
 import com.cbmedia.rollforending.models.Game
 import com.cbmedia.rollforending.models.Task
 import com.cbmedia.rollforending.ui.Dice
@@ -13,9 +14,9 @@ import kotlin.math.max
 class RollForTaskViewModel: ViewModel() {
 
     // Dice
-    val x = mutableIntStateOf(0)
-    val y = mutableIntStateOf(0)
-    val z = mutableIntStateOf(0)
+    val x = mutableStateOf(DiceRoll(name = "X"))
+    val y = mutableStateOf(DiceRoll(name = "Y"))
+    val z = mutableStateOf(DiceRoll(name = "Z"))
 
     val completedTasks = mutableStateListOf<Task>()
     val currentTask = mutableStateOf<Task?>(null)
@@ -41,20 +42,14 @@ class RollForTaskViewModel: ViewModel() {
         val game = selectedGame.value
 
         val (rollX, rollY, rollZ) = Dice.rollDiceWithBias()
-        x.intValue = rollX
-        y.intValue = rollY
-        z.intValue = rollZ
-
-        // Account for dubs and trips
-        if (x == y || y == z || x == z) z.intValue = max(0, z.intValue - 5)
-        else if (x == y && y == z) score.intValue -= 5
+        saveDiceRolls(rollX, rollY, rollZ)
 
         // Determine task
-        val category = determineCategory(score.intValue, z.intValue)
+        val category = determineCategory(score.intValue, z.value.rollValue)
         val task = when(category) {
-            game.categoryAName -> game.determineCategoryATask(x.intValue, y.intValue)
-            game.categoryBName -> game.determineCategoryBTask(y.intValue)
-            else -> game.determineCategoryCTask(z.intValue)
+            game.categoryAName -> game.determineCategoryATask(x.value.rollValue, y.value.rollValue)
+            game.categoryBName -> game.determineCategoryBTask(y.value.rollValue)
+            else -> game.determineCategoryCTask(z.value.rollValue)
         }
 
         currentTask.value = task
@@ -82,6 +77,39 @@ class RollForTaskViewModel: ViewModel() {
         else {
             score.intValue = 30
             return selectedGame.value.categoryBName
+        }
+    }
+
+    private fun saveDiceRolls(rollX: Int, rollY: Int, rollZ: Int) {
+        // Determine if trips, dubs or neither and assign DiceRolls
+        if (rollX == rollY && rollY == rollZ) {
+            // Must be triple
+            x.value = DiceRoll(name = "X", rollValue = rollX, isTriple = true)
+            y.value = DiceRoll(name = "Y", rollValue = rollY, isTriple = true)
+            z.value = DiceRoll(name = "Z", rollValue = rollZ, isTriple = true)
+            score.intValue -= 5
+        } else if (rollX == rollY || rollX == rollZ || rollY == rollZ) {
+            when (rollX) {
+                rollY -> {
+                    x.value = DiceRoll(name = "X", rollValue = rollX, isDouble = true)
+                    y.value = DiceRoll(name = "Y", rollValue = rollY, isDouble = true)
+                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5))
+                }
+                rollZ -> {
+                    x.value = DiceRoll(name = "X", rollValue = rollX, isDouble = true)
+                    y.value = DiceRoll(name = "Y", rollValue = rollY)
+                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5), isDouble = true)
+                }
+                else -> {
+                    x.value = DiceRoll(name = "X", rollValue = rollX)
+                    y.value = DiceRoll(name = "Y", rollValue = rollY, isDouble = true)
+                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5), isDouble = true)
+                }
+            }
+        } else {
+            x.value = DiceRoll(name = "X", rollValue = rollX)
+            y.value = DiceRoll(name = "Y", rollValue = rollY)
+            z.value = DiceRoll(name = "Z", rollValue = rollZ)
         }
     }
 }
