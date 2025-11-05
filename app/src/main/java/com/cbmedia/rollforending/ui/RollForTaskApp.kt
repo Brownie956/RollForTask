@@ -152,7 +152,11 @@ fun RollForTaskApp(
                 Text("Points earned: ${it.points}", fontSize = 18.sp)
             }
 
-            LazyColumn {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 8.dp)
+            ) {
                 itemsIndexed(completedTasks) { index, task ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
