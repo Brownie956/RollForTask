@@ -46,8 +46,30 @@ fun RollForTaskApp(
                 Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                     Text("Final Score: $score", fontWeight = FontWeight.Bold)
                     Text("Tasks Completed: ${completedTasks.size}\n")
-                    completedTasks.forEachIndexed { index, t ->
-                        Text("${index + 1}. [${t.category}] ${t.name} (+${t.points})")
+                    completedTasks.forEachIndexed { index, task ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Start,
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "${index + 1}. ",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                            )
+                            if (task.category == selectedGame.categoryCName) {
+                                Text(text = "[${task.category}] ${task.name}")
+                            } else {
+                                Column {
+                                    if (task.points < 0) {
+                                        Text(text = "😈️UNLUCKY! 😈")
+                                        Text(text = "[${task.category}] ${task.name} (${task.points})")
+                                    } else {
+                                        Text(text = "[${task.category}] ${task.name} (+${task.points})")
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -118,7 +140,8 @@ fun RollForTaskApp(
                 itemsIndexed(completedTasks) { index, task ->
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
+                        horizontalArrangement = Arrangement.Start,
+                        modifier = Modifier.padding(vertical = 8.dp)
                     ) {
                         Text(
                             text = "${index + 1}. ",
@@ -128,7 +151,14 @@ fun RollForTaskApp(
                         if (task.category == selectedGame.categoryCName) {
                             Text(text = "[${task.category}] ${task.name}")
                         } else {
-                            Text(text = "[${task.category}] ${task.name} (+${task.points})")
+                            Column {
+                                if (task.points < 0) {
+                                    Text(text = "😈️UNLUCKY! 😈")
+                                    Text(text = "[${task.category}] ${task.name} (${task.points})")
+                                } else {
+                                    Text(text = "[${task.category}] ${task.name} (+${task.points})")
+                                }
+                            }
                         }
                     }
                 }
