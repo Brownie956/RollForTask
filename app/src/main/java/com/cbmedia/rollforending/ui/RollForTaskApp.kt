@@ -36,8 +36,9 @@ fun RollForTaskApp(
     val completedTasks = viewModel.completedTasks
     val score by viewModel.score
     val isGameOver by viewModel.isGameOver
+    val showFinalDialog by viewModel.showFinalDialog
 
-    if (isGameOver) {
+    if (showFinalDialog) {
         AlertDialog(
             onDismissRequest = {},
             title = { Text("🏁 Game Summary") },
@@ -86,8 +87,14 @@ fun RollForTaskApp(
 
             // Game run buttons
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                Button(onClick = { viewModel.rollDiceAndGenerateTask() }) { Text("Roll Dice") }
-                Button(onClick = { viewModel.simulateFullGame() }) { Text("Simulate Game") }
+                if (isGameOver) {
+                    Button(onClick = { viewModel.showFinalDialog() }) {
+                        Text("End game")
+                    }
+                } else {
+                    Button(onClick = { viewModel.rollDiceAndGenerateTask() }) { Text("Roll Dice") }
+                    Button(onClick = { viewModel.simulateFullGame() }) { Text("Simulate Game") }
+                }
             }
 
             // Current task

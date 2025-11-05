@@ -23,6 +23,7 @@ class RollForTaskViewModel: ViewModel() {
     val score = mutableIntStateOf(0)
     // State
     val selectedGame = mutableStateOf<Game>(FitnessGame)
+    val showFinalDialog = mutableStateOf(false)
 
     // Logic
     fun startNewGame(game: Game) {
@@ -31,6 +32,7 @@ class RollForTaskViewModel: ViewModel() {
         score.intValue = 0
         isGameOver.value = false
         currentTask.value = null
+        showFinalDialog.value = false
     }
 
     fun rollDiceAndGenerateTask() {
@@ -66,6 +68,10 @@ class RollForTaskViewModel: ViewModel() {
     fun simulateFullGame() {
         startNewGame(selectedGame.value)
         while (!isGameOver.value) rollDiceAndGenerateTask()
+    }
+
+    fun showFinalDialog() {
+        showFinalDialog.value = true
     }
 
     private fun determineCategory(currentScore: Int, z: Int): String {
