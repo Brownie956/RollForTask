@@ -33,10 +33,12 @@ object FitnessGame: Game {
     }
 
     override fun determineCategoryCTask(index: Int): Task {
-        val task = if (index in 0..2) "Do nothing and finish the game"
-        else if (index in 3..5) "Run once more until you stop running and then finish the game"
-        else if (index in 6..8) "Run ten times with ankle weights and then finish the game"
-        else "Ten press ups and finish the game"
+        val task = when (index) {
+            in 0..2 -> "Do nothing and finish the game"
+            in 3..5 -> "Run once more until you stop running and then finish the game"
+            in 6..8 -> "Run ten times with ankle weights and then finish the game"
+            else -> "Ten press ups and finish the game"
+        }
 
         return Task(name = task, points = 0, category = categoryCName)
     }
