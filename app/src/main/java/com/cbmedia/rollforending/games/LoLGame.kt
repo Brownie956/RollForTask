@@ -4,8 +4,8 @@ import com.cbmedia.rollforending.models.Game
 import com.cbmedia.rollforending.models.Task
 
 object LoLGame: Game {
-    override val title: String = "💪League of Legends decider"
-    override val categoryAName: String = "How much money to save"
+    override val title: String = "🕹️⚔️League of Legends"
+    override val categoryAName: String = "Money"
     override val categoryBName: String = "CS score"
     override val categoryCName: String = "Win condition"
 

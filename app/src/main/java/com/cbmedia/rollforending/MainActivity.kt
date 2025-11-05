@@ -6,8 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.cbmedia.rollforending.games.FitnessGame
 import com.cbmedia.rollforending.ui.RollForTaskApp
+import com.cbmedia.rollforending.viewModels.RollForTaskViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             Scaffold { innerPadding ->
                 RollForTaskApp(
-                    game = FitnessGame,
+                    viewModel = RollForTaskViewModel(),
                     modifier = Modifier.padding(innerPadding)
                 )
             }
