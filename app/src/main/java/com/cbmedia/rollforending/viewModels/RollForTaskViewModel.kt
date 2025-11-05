@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.cbmedia.rollforending.games.FitnessGame
 import com.cbmedia.rollforending.models.DiceRoll
+import com.cbmedia.rollforending.models.DiceStatus
 import com.cbmedia.rollforending.models.Game
 import com.cbmedia.rollforending.models.Task
 import com.cbmedia.rollforending.ui.Dice
@@ -81,37 +82,44 @@ class RollForTaskViewModel: ViewModel() {
     }
 
     private fun saveDiceRolls(rollX: Int, rollY: Int, rollZ: Int) {
+        var xStatus: DiceStatus = DiceStatus.SINGLE
+        var yStatus: DiceStatus = DiceStatus.SINGLE
+        var zStatus: DiceStatus = DiceStatus.SINGLE
+        var adjustedZRoll: Int = rollZ
+
         // Determine if trips, dubs or neither and assign DiceRolls
         if (rollX == rollY && rollY == rollZ) {
             // Must be triple
-            x.value = DiceRoll(name = "X", rollValue = rollX, isTriple = true)
-            y.value = DiceRoll(name = "Y", rollValue = rollY, isTriple = true)
-            z.value = DiceRoll(name = "Z", rollValue = rollZ, isTriple = true)
+            xStatus = DiceStatus.TRIPLE
+            yStatus = DiceStatus.TRIPLE
+            zStatus = DiceStatus.TRIPLE
+
             score.intValue -= 5
         } else if (rollX == rollY || rollX == rollZ || rollY == rollZ) {
             // Must be double
+            adjustedZRoll = max(0, rollZ - 5)
+
             when (rollX) {
                 rollY -> {
-                    x.value = DiceRoll(name = "X", rollValue = rollX, isDouble = true)
-                    y.value = DiceRoll(name = "Y", rollValue = rollY, isDouble = true)
-                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5))
+                    xStatus = DiceStatus.DOUBLE
+                    yStatus = DiceStatus.DOUBLE
+                    zStatus = DiceStatus.SINGLE
                 }
                 rollZ -> {
-                    x.value = DiceRoll(name = "X", rollValue = rollX, isDouble = true)
-                    y.value = DiceRoll(name = "Y", rollValue = rollY)
-                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5), isDouble = true)
+                    xStatus = DiceStatus.DOUBLE
+                    yStatus = DiceStatus.SINGLE
+                    zStatus = DiceStatus.DOUBLE
                 }
                 else -> {
-                    x.value = DiceRoll(name = "X", rollValue = rollX)
-                    y.value = DiceRoll(name = "Y", rollValue = rollY, isDouble = true)
-                    z.value = DiceRoll(name = "Z", rollValue = max(0, rollZ - 5), isDouble = true)
+                    xStatus = DiceStatus.SINGLE
+                    yStatus = DiceStatus.DOUBLE
+                    zStatus = DiceStatus.DOUBLE
                 }
             }
-        } else {
-            // Neither triple or double
-            x.value = DiceRoll(name = "X", rollValue = rollX)
-            y.value = DiceRoll(name = "Y", rollValue = rollY)
-            z.value = DiceRoll(name = "Z", rollValue = rollZ)
         }
+
+        x.value = DiceRoll(name = selectedGame.value.diceXName, rollValue = rollX, diceStatus = xStatus)
+        y.value = DiceRoll(name = selectedGame.value.diceYName, rollValue = rollY, diceStatus = yStatus)
+        z.value = DiceRoll(name = selectedGame.value.diceZName, rollValue = adjustedZRoll, diceStatus = zStatus)
     }
 }

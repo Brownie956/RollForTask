@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cbmedia.rollforending.models.DiceRoll
+import com.cbmedia.rollforending.models.DiceStatus
 import kotlin.random.Random
 
 object Dice {
@@ -43,12 +44,10 @@ fun DieDisplay(
     diceRoll: DiceRoll,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = if (diceRoll.isTriple) {
-        Color(0xFFFF5D75)
-    } else if (diceRoll.isDouble) {
-        Color(0xFFFCE576)
-    } else {
-        MaterialTheme.colorScheme.surface
+    val backgroundColor = when (diceRoll.diceStatus) {
+        DiceStatus.SINGLE -> MaterialTheme.colorScheme.surface
+        DiceStatus.DOUBLE -> Color(0xFFFCE576)
+        DiceStatus.TRIPLE -> Color(0xFFFF5D75)
     }
     Column(horizontalAlignment = Alignment.Companion.CenterHorizontally) {
         Text(diceRoll.name, fontSize = 18.sp, fontWeight = FontWeight.Companion.Medium)
