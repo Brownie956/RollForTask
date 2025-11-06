@@ -103,11 +103,11 @@ fun RollForTaskApp(
             Text("Score: $score", fontSize = 22.sp)
 
             // Dice display
-            Row(horizontalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterHorizontally)) {
-                DieDisplay(viewModel.x.value)
-                DieDisplay(viewModel.y.value)
-                DieDisplay(viewModel.z.value)
-            }
+            DiceRow(
+                diceRollX = viewModel.x.value,
+                diceRollY = viewModel.y.value,
+                diceRollZ = viewModel.z.value
+            )
 
             // Game run buttons
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

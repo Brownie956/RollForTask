@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,6 +54,78 @@ object Dice {
 }
 
 @Composable
+fun DiceRow(
+    diceRollX: DiceRoll,
+    diceRollY: DiceRoll,
+    diceRollZ: DiceRoll,
+    modifier: Modifier = Modifier
+) {
+    val diceRolls = listOf(diceRollX, diceRollY, diceRollZ)
+    val rollStatus: DiceStatus = if (diceRolls.any { it.diceStatus == DiceStatus.DOUBLE }) {
+        DiceStatus.DOUBLE
+    } else if (diceRolls.any { it.diceStatus == DiceStatus.TRIPLE }) {
+        DiceStatus.TRIPLE
+    } else {
+        DiceStatus.SINGLE
+    }
+
+    // This controls the current scale for the dice
+    var targetScale by remember { mutableFloatStateOf(1f) }
+
+    // Animate the scale when targetScale changes
+    val animatedScale by animateFloatAsState(
+        targetValue = targetScale,
+        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+        label = "Dice Pulse"
+    )
+
+    // Pulse only when diceStatus is DOUBLE or TRIPLE
+    LaunchedEffect(rollStatus) {
+        if (rollStatus == DiceStatus.DOUBLE || rollStatus == DiceStatus.TRIPLE) {
+            targetScale = 1.5f
+            delay(500L)
+            targetScale = 1f
+        } else {
+            targetScale = 1f
+        }
+    }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            modifier = Modifier.height(40.dp)
+        ) {
+            if (rollStatus == DiceStatus.DOUBLE) {
+                Text(
+                    text = "DUBS!",
+                    fontSize = 38.sp,
+                    fontWeight = FontWeight.Companion.Medium,
+                    modifier = Modifier.graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
+                )
+            } else if (rollStatus == DiceStatus.TRIPLE) {
+                Text(
+                    text = "TRIPS!",
+                    fontSize = 38.sp,
+                    fontWeight = FontWeight.Companion.Medium,
+                    modifier = Modifier.graphicsLayer(scaleX = animatedScale, scaleY = animatedScale)
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(28.dp,Alignment.CenterHorizontally),
+            modifier = modifier
+        ) {
+            DieDisplay(diceRollX)
+            DieDisplay(diceRollY)
+            DieDisplay(diceRollZ)
+        }
+    }
+}
+
+@Composable
 fun DieDisplay(
     diceRoll: DiceRoll,
     modifier: Modifier = Modifier,
@@ -86,7 +159,8 @@ fun DieDisplay(
 
     Column(
         horizontalAlignment = Alignment.Companion.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = modifier
     ) {
         Text(diceRoll.name, fontSize = 18.sp, fontWeight = FontWeight.Companion.Medium)
         Surface(
