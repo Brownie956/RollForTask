@@ -23,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.cbmedia.rollforending.models.DiceRoll
+import com.cbmedia.rollforending.models.DiceStatus
 import com.cbmedia.rollforending.models.GameRegistry
 import com.cbmedia.rollforending.viewModels.RollForTaskViewModel
 
@@ -114,7 +116,22 @@ fun RollForTaskApp(
                         Text("End game")
                     }
                 } else {
-                    Button(onClick = { viewModel.rollDiceAndGenerateTask() }) { Text("Roll Dice") }
+                    Button(
+                        onClick = {
+                            viewModel.rollDiceWithAnimation(
+                                onUpdate = { (x, y, z) ->
+                                    viewModel.saveDiceRolls(
+                                        rollX = DiceRoll(name = selectedGame.diceXName, rollValue = x, diceStatus = DiceStatus.SINGLE),
+                                        rollY = DiceRoll(name = selectedGame.diceYName, rollValue = y, diceStatus = DiceStatus.SINGLE),
+                                        rollZ = DiceRoll(name = selectedGame.diceZName, rollValue = z, diceStatus = DiceStatus.SINGLE)
+                                    )
+                                },
+                                onFinal = { viewModel.generateTask() }
+                            )
+                        }
+                    ) {
+                        Text("Roll Dice")
+                    }
                     Button(onClick = { viewModel.simulateFullGame() }) { Text("Simulate Game") }
                 }
             }

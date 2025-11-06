@@ -4,12 +4,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.cbmedia.rollforending.games.FitnessGame
 import com.cbmedia.rollforending.models.DiceRoll
 import com.cbmedia.rollforending.models.DiceStatus
 import com.cbmedia.rollforending.models.Game
 import com.cbmedia.rollforending.models.Task
 import com.cbmedia.rollforending.ui.Dice
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 
 class RollForTaskViewModel: ViewModel() {
@@ -35,15 +38,45 @@ class RollForTaskViewModel: ViewModel() {
         isGameOver.value = false
         currentTask.value = null
         showFinalDialog.value = false
+        x.value = DiceRoll(name = game.diceXName)
+        y.value = DiceRoll(name = game.diceYName)
+        z.value = DiceRoll(name = game.diceZName)
     }
 
-    fun rollDiceAndGenerateTask() {
+    fun rollDiceWithAnimation(
+        onUpdate: (Triple<Int, Int, Int>) -> Unit,
+        onFinal: (Triple<Int, Int, Int>) -> Unit
+    ) {
+        var interimRoll = Triple(0, 0, 0)
+
+        viewModelScope.launch {
+            // Simulate rolling animation
+            repeat(15) { // number of "spin frames"
+                interimRoll = Dice.rollDiceWithBias()
+                onUpdate(interimRoll)
+                delay(80L) // speed of roll updates
+            }
+
+            // Final stable roll - Update one after the other
+            val finalRoll = Dice.rollDiceWithBias()
+            onUpdate(Triple(finalRoll.first, interimRoll.second, interimRoll.third))
+            delay(300L)
+
+            onUpdate(Triple(finalRoll.first, finalRoll.second, interimRoll.third))
+            delay(300L)
+
+            onUpdate(Triple(finalRoll.first, finalRoll.second, finalRoll.third))
+            delay(300L)
+
+            processDiceRolls(rollX = finalRoll.first, rollY = finalRoll.second, rollZ = finalRoll.third)
+            onFinal(finalRoll)
+        }
+    }
+
+    fun generateTask() {
         if (isGameOver.value) return
 
         val game = selectedGame.value
-
-        val (rollX, rollY, rollZ) = Dice.rollDiceWithBias()
-        saveDiceRolls(rollX, rollY, rollZ)
 
         // Determine task
         val category = determineCategory(score.intValue, z.value.rollValue)
@@ -63,11 +96,21 @@ class RollForTaskViewModel: ViewModel() {
 
     fun simulateFullGame() {
         startNewGame(selectedGame.value)
-        while (!isGameOver.value) rollDiceAndGenerateTask()
+        while (!isGameOver.value) {
+            val diceRoll = Dice.rollDiceWithBias()
+            processDiceRolls(rollX = diceRoll.first, rollY = diceRoll.second, rollZ = diceRoll.third)
+            generateTask()
+        }
     }
 
     fun showFinalDialog() {
         showFinalDialog.value = true
+    }
+
+    fun saveDiceRolls(rollX: DiceRoll, rollY: DiceRoll, rollZ: DiceRoll) {
+        x.value = rollX
+        y.value = rollY
+        z.value = rollZ
     }
 
     private fun determineCategory(currentScore: Int, z: Int): String {
@@ -81,7 +124,7 @@ class RollForTaskViewModel: ViewModel() {
         }
     }
 
-    private fun saveDiceRolls(rollX: Int, rollY: Int, rollZ: Int) {
+    private fun processDiceRolls(rollX: Int, rollY: Int, rollZ: Int) {
         var xStatus: DiceStatus = DiceStatus.SINGLE
         var yStatus: DiceStatus = DiceStatus.SINGLE
         var zStatus: DiceStatus = DiceStatus.SINGLE
@@ -118,8 +161,10 @@ class RollForTaskViewModel: ViewModel() {
             }
         }
 
-        x.value = DiceRoll(name = selectedGame.value.diceXName, rollValue = rollX, diceStatus = xStatus)
-        y.value = DiceRoll(name = selectedGame.value.diceYName, rollValue = rollY, diceStatus = yStatus)
-        z.value = DiceRoll(name = selectedGame.value.diceZName, rollValue = adjustedZRoll, diceStatus = zStatus)
+        saveDiceRolls(
+            rollX = DiceRoll(name = selectedGame.value.diceXName, rollValue = rollX, diceStatus = xStatus),
+            rollY = DiceRoll(name = selectedGame.value.diceYName, rollValue = rollY, diceStatus = yStatus),
+            rollZ = DiceRoll(name = selectedGame.value.diceZName, rollValue = adjustedZRoll, diceStatus = zStatus)
+        )
     }
 }
