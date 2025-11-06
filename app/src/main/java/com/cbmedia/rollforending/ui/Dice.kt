@@ -13,7 +13,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cbmedia.rollforending.models.DiceRoll
 import com.cbmedia.rollforending.models.DiceStatus
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 object Dice {
@@ -58,10 +63,26 @@ fun DieDisplay(
         DiceStatus.TRIPLE -> Color(0xFFFF0012)
     }
 
-    val scale by animateFloatAsState(
-        targetValue = 1.2f,
-        animationSpec = tween(durationMillis = 100, easing = FastOutSlowInEasing)
+    // This controls the current scale for the dice
+    var targetScale by remember { mutableFloatStateOf(1f) }
+
+    // Animate the scale when targetScale changes
+    val animatedScale by animateFloatAsState(
+        targetValue = targetScale,
+        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+        label = "Dice Pulse"
     )
+
+    // Pulse only when diceStatus is DOUBLE or TRIPLE
+    LaunchedEffect(diceRoll.diceStatus) {
+        if (diceRoll.diceStatus == DiceStatus.DOUBLE || diceRoll.diceStatus == DiceStatus.TRIPLE) {
+            targetScale = 1.5f
+            delay(500L)
+            targetScale = 1f
+        } else {
+            targetScale = 1f
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.Companion.CenterHorizontally,
@@ -72,7 +93,7 @@ fun DieDisplay(
             tonalElevation = 4.dp,
             modifier = Modifier
                 .size(80.dp)
-                .graphicsLayer(scaleX = scale, scaleY = scale),
+                .graphicsLayer(scaleX = animatedScale, scaleY = animatedScale),
             shape = MaterialTheme.shapes.medium,
             color = backgroundColor,
             border = BorderStroke(3.dp, Color.Black)

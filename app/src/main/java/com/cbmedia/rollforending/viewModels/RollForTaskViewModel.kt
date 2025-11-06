@@ -60,13 +60,13 @@ class RollForTaskViewModel: ViewModel() {
             // Final stable roll - Update one after the other
             val finalRoll = Dice.rollDiceWithBias()
             onUpdate(Triple(finalRoll.first, interimRoll.second, interimRoll.third))
-            delay(300L)
+            delay(400L)
 
             onUpdate(Triple(finalRoll.first, finalRoll.second, interimRoll.third))
-            delay(300L)
+            delay(400L)
 
             onUpdate(Triple(finalRoll.first, finalRoll.second, finalRoll.third))
-            delay(300L)
+            delay(400L)
 
             processDiceRolls(rollX = finalRoll.first, rollY = finalRoll.second, rollZ = finalRoll.third)
             onFinal(finalRoll)
