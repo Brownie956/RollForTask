@@ -3,6 +3,7 @@ package com.cbmedia.rollforending.models
 data class DiceRoll(
     val name: String,
     val rollValue: Int = 0,
+    val preProcessedRoll: Int = rollValue,
     val diceStatus: DiceStatus = DiceStatus.SINGLE,
 )
 

@@ -103,7 +103,7 @@ fun RollForTaskApp(
             Text("Score: $score", fontSize = 22.sp)
 
             // Dice display
-            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterHorizontally)) {
                 DieDisplay(viewModel.x.value)
                 DieDisplay(viewModel.y.value)
                 DieDisplay(viewModel.z.value)

@@ -164,7 +164,7 @@ class RollForTaskViewModel: ViewModel() {
         saveDiceRolls(
             rollX = DiceRoll(name = selectedGame.value.diceXName, rollValue = rollX, diceStatus = xStatus),
             rollY = DiceRoll(name = selectedGame.value.diceYName, rollValue = rollY, diceStatus = yStatus),
-            rollZ = DiceRoll(name = selectedGame.value.diceZName, rollValue = adjustedZRoll, diceStatus = zStatus)
+            rollZ = DiceRoll(name = selectedGame.value.diceZName, rollValue = adjustedZRoll, preProcessedRoll = rollZ, diceStatus = zStatus)
         )
     }
 }

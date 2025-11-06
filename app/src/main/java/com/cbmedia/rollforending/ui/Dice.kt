@@ -7,6 +7,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cbmedia.rollforending.models.DiceRoll
@@ -69,7 +71,7 @@ fun DieDisplay(
         Surface(
             tonalElevation = 4.dp,
             modifier = Modifier
-                .size(60.dp)
+                .size(80.dp)
                 .graphicsLayer(scaleX = scale, scaleY = scale),
             shape = MaterialTheme.shapes.medium,
             color = backgroundColor,
@@ -78,11 +80,27 @@ fun DieDisplay(
             Box(
                 contentAlignment = Alignment.Companion.Center,
             ) {
-                Text(
-                    text = diceRoll.rollValue.toString(),
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Companion.Bold
-                )
+                if (diceRoll.rollValue == diceRoll.preProcessedRoll) {
+                    Text(
+                        text = diceRoll.rollValue.toString(),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Companion.Bold
+                    )
+                } else {
+                    Row {
+                        Text(
+                            text = diceRoll.preProcessedRoll.toString(),
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Companion.Bold,
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                        Text(
+                            text = " -> ${diceRoll.rollValue}",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Companion.Bold
+                        )
+                    }
+                }
             }
         }
     }
